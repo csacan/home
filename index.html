@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Can Yıldızlı — Research & Builder Portfolio</title>
+<meta name="description" content="Researcher and builder. Spectral bias in equivariant graph neural networks, computer vision, and product engineering." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,200..900,0..100;1,9..144,200..900,0..100&family=DM+Sans:opsz,wght@9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #f3efe6;
+    --bg-alt: #ece7dc;
+    --paper: #faf7f0;
+    --ink: #181614;
+    --ink-2: #2a2622;
+    --muted: #7c766c;
+    --rule: #d8d2c4;
+    --accent: #1a3fe0;       /* cobalt — links, accents */
+    --accent-soft: #1a3fe014;
+    --highlight: #c08043;    /* warm ochre, used sparingly */
+    --display: "Fraunces", ui-serif, Georgia, serif;
+    --sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============ paper grain (very subtle) ============ */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.094  0 0 0 0 0.086  0 0 0 0 0.078  0 0 0 0.045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============ typography helpers ============ */
+  .display { font-family: var(--display); font-weight: 350; letter-spacing: -0.02em; }
+  .mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  em { font-family: var(--display); font-style: italic; font-weight: 350; color: var(--ink); }
+  a { color: var(--accent); text-decoration: none; transition: color .2s; }
+  a:hover { color: var(--ink); }
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  /* ============ layout ============ */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  section { padding: 96px 0; border-top: 1px solid var(--rule); position: relative; }
+  section:first-of-type { border-top: 0; }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 48px;
+    margin-bottom: 56px;
+    align-items: baseline;
+  }
+  .section-head .label { padding-top: 6px; }
+  .section-head h2 {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(32px, 4.2vw, 52px);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0;
+    font-variation-settings: "opsz" 144;
+  }
+
+  /* ============ nav ============ */
+  nav.top {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background: color-mix(in oklab, var(--bg) 80%, transparent);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, background .3s;
+  }
+  nav.top.scrolled { border-bottom-color: var(--rule); }
+  nav.top .inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+  nav.top .brand {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  nav.top .brand .dot { color: var(--accent); }
+  nav.top ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 28px;
+  }
+  nav.top a {
+    color: var(--ink-2);
+    font-size: 14px;
+    font-weight: 450;
+    position: relative;
+  }
+  nav.top a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -4px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .3s;
+  }
+  nav.top a:hover::after { transform: scaleX(1); }
+
+  /* ============ hero ============ */
+  .hero {
+    padding: 120px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero .meta {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 36px;
+    color: var(--muted);
+  }
+  .hero .meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--highlight); }
+  .hero h1 {
+    font-family: var(--display);
+    font-variation-settings: "opsz" 144, "SOFT" 60;
+    font-weight: 300;
+    font-size: clamp(54px, 9vw, 132px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    color: var(--accent);
+  }
+  .hero .tagline {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--ink-2);
+    max-width: 720px;
+    margin: 0 0 48px;
+  }
+  .hero .tagline .accent { color: var(--accent); font-style: italic; }
+  .hero .actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    transition: all .25s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: var(--bg); }
+  .btn.primary:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn.ghost { background: transparent; border-color: var(--ink); color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--bg); }
+  .btn .arr { transition: transform .25s; }
+  .btn:hover .arr { transform: translateX(3px); }
+
+  /* spectral hero motif — fourier sum animation */
+  .spectral {
+    position: absolute;
+    right: -40px;
+    top: 90px;
+    width: 360px;
+    height: 360px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .spectral svg { width: 100%; height: 100%; }
+  .spectral path { stroke: var(--ink); stroke-width: 0.8; fill: none; opacity: 0.45; }
+  .spectral .k1 { stroke: var(--accent); opacity: 0.7; }
+  .spectral .sum { stroke: var(--ink); stroke-width: 1.4; opacity: 1; }
+
+  @media (max-width: 900px) {
+    .spectral { display: none; }
+  }
+
+  .hero .footnote {
+    margin-top: 80px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .hero .footnote .rule { flex: 0 0 60px; height: 1px; background: var(--rule); }
+
+  /* ============ about ============ */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-grid .body p {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(20px, 1.9vw, 24px);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    margin: 0 0 24px;
+    color: var(--ink-2);
+  }
+  .about-grid .body p:first-child::first-letter {
+    font-family: var(--display);
+    font-size: 4em;
+    font-weight: 300;
+    float: left;
+    line-height: 0.85;
+    margin: 6px 12px 0 0;
+    color: var(--accent);
+  }
+  .portrait {
+    aspect-ratio: 4/5;
+    background:
+      radial-gradient(120% 80% at 30% 20%, rgba(26, 63, 224, 0.15), transparent 60%),
+      linear-gradient(160deg, var(--bg-alt) 0%, var(--rule) 100%);
+    border: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+  .portrait::after {
+    content: "[ portrait — replace with photo ]";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 800px) {
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  /* ============ research callout ============ */
+  .callout {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 48px 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+  }
+  .callout::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 32px; height: 32px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+  .callout .label { color: var(--accent); margin-bottom: 12px; }
+  .callout h3 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-size: clamp(24px, 2.4vw, 32px);
+    line-height: 1.2;
+    margin: 0 0 12px;
+    letter-spacing: -0.015em;
+  }
+  .callout p { margin: 0; color: var(--muted); max-width: 560px; }
+  .callout .marker {
+    font-family: var(--display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: 80px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  @media (max-width: 700px) {
+    .callout { grid-template-columns: 1fr; padding: 32px; }
+    .callout .marker { font-size: 56px; }
+  }
+
+  /* ============ projects ============ */
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .filter {
+    border: 1px solid var(--rule);
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    text-transform: uppercase;
+  }
+  .filter:hover { color: var(--ink); border-color: var(--ink); }
+  .filter.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .project {
+    background: var(--bg);
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 320px;
+    transition: background .3s, transform .4s;
+    position: relative;
+    cursor: pointer;
+  }
+  .project:hover { background: var(--paper); }
+  .project .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .project .year { color: var(--muted); }
+  .project .venue { color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; }
+  .project h3 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .project p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+  }
+  .project .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .project .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-2);
+    background: var(--bg-alt);
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .project .arrow {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s;
+    transform: rotate(-45deg);
+    opacity: 0;
+  }
+  .project:hover .arrow { opacity: 1; transform: rotate(0deg); }
+  .project.hidden { display: none; }
+
+  @media (max-width: 800px) {
+    .projects { grid-template-columns: 1fr; }
+  }
+
+  /* ============ timeline ============ */
+  .tl {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 48px;
+  }
+  .tl-row {
+    display: contents;
+  }
+  .tl .year-col {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    padding-top: 6px;
+    border-top: 1px solid var(--rule);
+  }
+  .tl .item {
+    padding: 24px 0;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .tl .item:hover h4 { color: var(--accent); }
+  .tl h4 {
+    font-family: var(--display);
+    font-weight: 350;
+    font-size: 24px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    transition: color .2s;
+  }
+  .tl .role { color: var(--muted); font-size: 14px; }
+  .tl .place { color: var(--ink-2); font-size: 13px; font-family: var(--mono); }
+  @media (max-width: 700px) {
+    .tl { grid-template-columns: 1fr; gap: 8px; }
+    .tl .year-col { border-top: 0; padding-top: 24px; }
+    .tl .item { border-top: 0; padding-top: 8px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
+
+  /* ============ contact ============ */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .contact-grid h2 {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(48px, 7vw, 96px);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    margin: 0;
+  }
+  .contact-grid h2 em { color: var(--accent); }
+  .contact-grid .links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 12px;
+  }
+  .contact-grid .link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    font-size: 18px;
+    transition: padding-left .25s, color .25s;
+  }
+  .contact-grid .link:first-child { border-top: 1px solid var(--rule); }
+  .contact-grid .link:hover { padding-left: 12px; color: var(--accent); }
+  .contact-grid .link .label { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  @media (max-width: 800px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ============ footer ============ */
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  /* ============ scroll reveal ============ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .9s ease, transform .9s ease;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ============ responsive section heads ============ */
+  @media (max-width: 700px) {
+    .section-head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+    section { padding: 64px 0; }
+    .wrap { padding: 0 24px; }
+    nav.top .inner { padding: 14px 24px; }
+    nav.top ul { gap: 18px; }
+    .hero { padding: 80px 0 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<nav class="top" id="topnav">
+  <div class="inner">
+    <a class="brand" href="#top">Can&nbsp;Yıldızlı<span class="dot">.</span></a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#cv">CV</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="meta">
+      <span class="mono">M.Sc. researcher · ETH Zürich</span>
+      <span class="dot"></span>
+      <span class="mono">Visiting · Gatsby Unit, UCL</span>
+    </div>
+
+    <h1 class="display">Geometry,<br/>spectra,<br/>and <em>generalization.</em></h1>
+
+    <p class="tagline">
+      I work on the <span class="accent">spectral structure</span> of equivariant networks &mdash; how symmetry, frequency, and inductive bias shape what a model can learn. Joint research with ETH and MIT, targeting NeurIPS&nbsp;2026.
+    </p>
+
+    <div class="actions">
+      <a href="#projects" class="btn primary">View selected works <span class="arr">&rarr;</span></a>
+      <a href="#contact" class="btn ghost">Get in touch</a>
+    </div>
+
+    <div class="footnote">
+      <span class="rule"></span>
+      <span class="mono">Fourier synthesis &middot; equivariant features &middot; rendered live</span>
+    </div>
+  </div>
+
+  <!-- Spectral / Fourier-sum animation -->
+  <div class="spectral" aria-hidden="true">
+    <svg viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMid meet">
+      <g id="harm"></g>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label mono">§ 01 — About</div>
+      <h2 class="display">A <em>researcher</em> with a builder's hands.</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="body">
+        <p>
+          I am a Master's student in Electrical Engineering &amp; Computer Science at ETH Zürich, with a confirmed visit to UCL's <em>Gatsby Computational Neuroscience Unit</em>. My research lives at the intersection of geometric deep learning, spectral analysis, and statistical physics.
+        </p>
+        <p>
+          Before research, I built <em>facadetool.com</em>, a proptech product now used by ~10,000 people, and published on dynamic 3D scene graphs at CVPR. I taught optimal transport under <em>Alessio Figalli</em>, profiled Llama&nbsp;3 on a GH200, and shipped behavioural-cloning policies on a real robot arm.
+        </p>
+        <p>
+          I&nbsp;care about niche scientific contribution &mdash; ideas that are precise, beautiful, and a little unfashionable.
+        </p>
+      </div>
+      <div class="portrait" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CURRENT RESEARCH CALLOUT ===================== -->
+<section id="research">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label mono">§ 02 — Current focus</div>
+      <h2 class="display">Spectral bias in <em>equivariant</em> graph neural networks.</h2>
+    </div>
+
+    <div class="callout">
+      <div>
+        <div class="label mono">In progress &middot; ETH × MIT &middot; NeurIPS 2026</div>
+        <h3>Why does equivariance change what frequencies a network learns first?</h3>
+        <p>
+          Joint work with <em>Manasa Kaniselvan</em> (Luisier group, ETH) and a Smidt-adjacent postdoc at MIT, with compute on an NVIDIA GH200 node. Started as a semester project, elevated to a full submission once the collaboration was confirmed.
+        </p>
+      </div>
+      <div class="marker">∇</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROJECTS ===================== -->
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label mono">§ 03 — Selected works</div>
+      <h2 class="display">Six things <em>worth</em> talking about.</h2>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="research">Research</button>
+      <button class="filter" data-filter="vision">Vision</button>
+      <button class="filter" data-filter="product">Product</button>
+      <button class="filter" data-filter="robotics">Robotics</button>
+      <button class="filter" data-filter="systems">Systems</button>
+    </div>
+
+    <div class="projects" id="projects-grid">
+
+      <article class="project" data-cats="research">
+        <div class="top">
+          <span class="year mono">2025 — present</span>
+          <span class="venue">NeurIPS 2026 (target)</span>
+        </div>
+        <h3>Spectral bias in equivariant GNNs</h3>
+        <p>How do group-equivariant constraints reshape the frequency content a network is willing to fit? A spectral perspective on inductive bias and generalisation in geometric deep learning.</p>
+        <div class="tags">
+          <span class="tag">GNNs</span>
+          <span class="tag">Theory</span>
+          <span class="tag">ETH × MIT</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+      <article class="project" data-cats="vision research">
+        <div class="top">
+          <span class="year mono">2023</span>
+          <span class="venue">CVPR</span>
+        </div>
+        <h3>Dynamic 3D scene graphs for egocentric action recognition</h3>
+        <p>Modelling first-person video as evolving 3D scene graphs. Published at CVPR; demonstrates how relational structure, not just appearance, drives action understanding.</p>
+        <div class="tags">
+          <span class="tag">CVPR</span>
+          <span class="tag">3D</span>
+          <span class="tag">Action recognition</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+      <article class="project" data-cats="product vision">
+        <div class="top">
+          <span class="year mono">2022 — present</span>
+          <span class="venue">~10,000 users</span>
+        </div>
+        <h3>facadetool.com</h3>
+        <p>An independent proptech product for building façade analysis. Designed, built, shipped, and maintained end-to-end &mdash; from CV pipeline to billing. Profitable side line that funds the rest.</p>
+        <div class="tags">
+          <span class="tag">Product</span>
+          <span class="tag">Computer Vision</span>
+          <span class="tag">Proptech</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+      <article class="project" data-cats="research">
+        <div class="top">
+          <span class="year mono">2024 — 2025</span>
+          <span class="venue">ETH · Luisier group</span>
+        </div>
+        <h3>HELM: equivariant GNNs for Hamiltonian prediction</h3>
+        <p>Predicting electronic-structure Hamiltonians with E(3)-equivariant networks for materials. The spectral learning dynamics observed here seeded the current NeurIPS line of work.</p>
+        <div class="tags">
+          <span class="tag">Equivariance</span>
+          <span class="tag">Materials</span>
+          <span class="tag">DFT</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+      <article class="project" data-cats="robotics">
+        <div class="top">
+          <span class="year mono">2026</span>
+          <span class="venue">ETH robotics</span>
+        </div>
+        <h3>Reasoning pick &amp; place on SO-101</h3>
+        <p>A modular VLA pipeline: small quantised LLM for instruction parsing, CLIP&nbsp;ViT-B for grounding, MLP policy for control. Behavioural cloning on real teleoperation reaches ~76% success.</p>
+        <div class="tags">
+          <span class="tag">VLA</span>
+          <span class="tag">Behavioural cloning</span>
+          <span class="tag">SO-101</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+      <article class="project" data-cats="systems">
+        <div class="top">
+          <span class="year mono">2026</span>
+          <span class="venue">ETH HPC</span>
+        </div>
+        <h3>Roofline analysis of Llama 3-8B on GH200</h3>
+        <p>Profiled forward-pass FFN GEMMs on an NVIDIA GH200 with Nsight Systems. Full roofline characterisation of memory- vs. compute-bound regimes across batch and sequence dimensions.</p>
+        <div class="tags">
+          <span class="tag">Systems</span>
+          <span class="tag">CUDA</span>
+          <span class="tag">Profiling</span>
+        </div>
+        <span class="arrow">→</span>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CV / TIMELINE ===================== -->
+<section id="cv">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label mono">§ 04 — Trajectory</div>
+      <h2 class="display">Where I've been, what I've <em>taught.</em></h2>
+    </div>
+
+    <div class="tl">
+      <div class="year-col">2026 →</div>
+      <div class="item">
+        <div>
+          <h4>Gatsby Computational Neuroscience Unit, UCL</h4>
+          <div class="role">Visiting researcher (confirmed)</div>
+        </div>
+        <div class="place">London, UK</div>
+      </div>
+
+      <div class="year-col">2024 — 2026</div>
+      <div class="item">
+        <div>
+          <h4>ETH Zürich</h4>
+          <div class="role">M.Sc. Electrical Engineering &amp; Computer Science</div>
+        </div>
+        <div class="place">Zürich, CH</div>
+      </div>
+
+      <div class="year-col">2025</div>
+      <div class="item">
+        <div>
+          <h4>ICLR 2026 — Volunteer</h4>
+          <div class="role">Conference programme, Rio de Janeiro</div>
+        </div>
+        <div class="place">Rio, BR</div>
+      </div>
+
+      <div class="year-col">2024 — 2025</div>
+      <div class="item">
+        <div>
+          <h4>Optimal Transport &mdash; ETH Zürich</h4>
+          <div class="role">Teaching assistant under Prof. Alessio Figalli (Fields Medal '18)</div>
+        </div>
+        <div class="place">Zürich, CH</div>
+      </div>
+
+      <div class="year-col">2022 — present</div>
+      <div class="item">
+        <div>
+          <h4>facadetool.com</h4>
+          <div class="role">Founder &amp; sole engineer · ~10k users</div>
+        </div>
+        <div class="place">Independent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div>
+        <div class="mono" style="color: var(--muted); margin-bottom: 18px;">§ 05 — Get in touch</div>
+        <h2 class="display">Let's <em>talk.</em></h2>
+        <p style="color: var(--muted); margin-top: 24px; max-width: 360px;">
+          Open to research collaborations, conversations about geometric deep learning, and the occasional good problem.
+        </p>
+      </div>
+
+      <div class="links">
+        <a class="link" href="mailto:hello@example.com">
+          <span>hello@example.com</span>
+          <span class="label">Email</span>
+        </a>
+        <a class="link" href="https://github.com/" target="_blank" rel="noopener">
+          <span>github.com/canyildizli</span>
+          <span class="label">Code</span>
+        </a>
+        <a class="link" href="https://www.linkedin.com/" target="_blank" rel="noopener">
+          <span>linkedin.com/in/canyildizli</span>
+          <span class="label">LinkedIn</span>
+        </a>
+        <a class="link" href="https://scholar.google.com/" target="_blank" rel="noopener">
+          <span>Google Scholar</span>
+          <span class="label">Publications</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; width:100%;">
+    <div>© 2026 Can Yıldızlı. Zürich, CH.</div>
+    <div class="mono">Set in Fraunces &middot; DM&nbsp;Sans &middot; JetBrains Mono</div>
+  </div>
+</footer>
+
+<script>
+  // ---------- nav scroll state ----------
+  const nav = document.getElementById('topnav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- scroll reveal ----------
+  document.querySelectorAll('section, .project, .tl > div').forEach(el => {
+    el.classList.add('reveal');
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ---------- project filter ----------
+  const filters = document.querySelectorAll('.filter');
+  const projects = document.querySelectorAll('.project');
+  filters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      projects.forEach(p => {
+        const cats = (p.dataset.cats || '').split(/\s+/);
+        const match = f === 'all' || cats.includes(f);
+        p.classList.toggle('hidden', !match);
+      });
+    });
+  });
+
+  // ---------- spectral / Fourier-sum motif ----------
+  // Renders a square-wave Fourier approximation: y = Σ (1/k) sin(k·θ) for odd k
+  // Each harmonic is drawn faintly; their running sum is drawn boldly on top.
+  // The whole thing rotates slowly to feel alive.
+  (function () {
+    const g = document.getElementById('harm');
+    if (!g) return;
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const N = 700;            // samples
+    const R = 150;            // base radius
+    const harmonics = [1, 3, 5, 7, 9, 11];
+    let phase = 0;
+
+    // create a path per harmonic + sum
+    const harmPaths = harmonics.map((k, i) => {
+      const p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('class', i === 0 ? 'k1' : '');
+      g.appendChild(p);
+      return { k, el: p };
+    });
+    const sumPath = document.createElementNS(SVG_NS, 'path');
+    sumPath.setAttribute('class', 'sum');
+    g.appendChild(sumPath);
+
+    function frame() {
+      phase += 0.004;
+      // each harmonic as its own circle, scaled
+      harmPaths.forEach(({ k, el }, idx) => {
+        const r = R * (1 / k) * 1.1;
+        let d = '';
+        for (let i = 0; i <= N; i++) {
+          const t = (i / N) * Math.PI * 2;
+          const x = r * Math.cos(k * t + phase * k);
+          const y = r * Math.sin(k * t + phase * k);
+          d += (i ? 'L' : 'M') + x.toFixed(2) + ',' + y.toFixed(2);
+        }
+        el.setAttribute('d', d);
+      });
+      // running sum (square-wave approx in polar)
+      let d = '';
+      for (let i = 0; i <= N; i++) {
+        const t = (i / N) * Math.PI * 2;
+        let sx = 0, sy = 0;
+        harmonics.forEach(k => {
+          sx += (R / k) * Math.cos(k * t + phase * k);
+          sy += (R / k) * Math.sin(k * t + phase * k);
+        });
+        d += (i ? 'L' : 'M') + sx.toFixed(2) + ',' + sy.toFixed(2);
+      }
+      sumPath.setAttribute('d', d);
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
+</script>
+
+</body>
+</html>
