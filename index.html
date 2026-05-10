@@ -364,6 +364,8 @@
     transition: background .3s, transform .4s;
     position: relative;
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
   }
   .project:hover { background: var(--paper); }
   .project .top { display: flex; justify-content: space-between; align-items: baseline; }
@@ -672,7 +674,8 @@
         <span class="arrow">→</span>
       </article>
 
-      <article class="project" data-cats="vision research">
+      <a class="project" data-cats="vision research"
+         href="3d_vision_report.pdf" target="_blank" rel="noopener">
         <div class="top">
           <span class="year mono">2023</span>
           <span class="venue">CVPR</span>
@@ -685,7 +688,7 @@
           <span class="tag">Action recognition</span>
         </div>
         <span class="arrow">→</span>
-      </article>
+      </a>
 
       <article class="project" data-cats="product vision">
         <div class="top">
